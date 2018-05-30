@@ -1,0 +1,5 @@
+*.txt
+*.retry
+*secrets.yml
+*/dev/*
+secrets.rb
