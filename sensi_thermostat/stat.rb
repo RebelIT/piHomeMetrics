@@ -20,7 +20,6 @@ class CollectStat
         end
       end
     rescue
-      puts "Retrying"
       retry if (retries += 1) < 5
     end
   end
@@ -76,8 +75,3 @@ class CollectStat
 end
 
 CollectStat.new.main
-
-
-
-
-/home/pi/git/piProjects/sensi_thermostat/stat.rb
