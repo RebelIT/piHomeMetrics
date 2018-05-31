@@ -22,13 +22,12 @@ class CollectStat
   end
 
   def get_req(uri)
-
     response = RestClient::Request.execute(
       method: 'GET',
       url: uri,
     )
-    response = JSON.parse(Hash.from_xml(response.body).to_json)
-    response
+    response = Hash.from_xml(response.body).to_json
+    response JSON.parse(response)
   end
 
   def connect_db (db)
