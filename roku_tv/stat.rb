@@ -9,9 +9,15 @@ class CollectStat
     begin
       base_uri = ENV['tv_base_uri']
       device_info = get_req("#{base_uri}/query/device-info")
-      device_apps = get_req("#{base_uri}/query/apps")
-      active_app = get_req("#{base_uri}/query/active-app")
-      #device_info['device_info']['language']
+      db_connect = connect_db(ENV['db'])
+
+      unless device_info.nil? || db_connect.nil?
+        roku_tv_stats = collect_stats(device_info)
+
+        unless roku_tv_stats.nil?
+            send_stats(roku_tv_stats,db_connect)
+        end
+      end
     end
   end
 
@@ -32,16 +38,12 @@ class CollectStat
     return nil
   end
 
-  def collect_stats()
+  def collect_stats(device_info)
    stats = {
-    "mode" => thermostat.system_mode,
-    "temp" => thermostat.temperature,
-    "set_temp" => thermostat.system_temperature,
-    "humidity" => thermostat.humidity,
-    "system_enabled" => thermostat.system_on?.to_s,
-    "fan_enabled" => thermostat.system_fan_on?.to_s,
-    "System_running" => thermostat.system_active?.to_s,
-    "runtime" => stat_time
+    "name" => device_info['device_info']['user-device-name'],
+    "version" => device_info['device_info']['software-version'],
+    "build" => device_info['device_info']['software-build'],
+    "state" => device_info['device_info']['power-mode']
     }
     stats
   end
@@ -50,9 +52,9 @@ class CollectStat
     name = 'RokuTv'
 
     stats.each do |key,value|
-      data = {values: { "#{key}": value },tags:{ location: "LivingRoom" }}
-      db.write_point(name, data)
-#      puts data
+      data = {values: { "#{key}": value },tags:{ location: "FamilyRoom" }}
+#      db.write_point(name, data)
+     puts data
     end
   end
 
